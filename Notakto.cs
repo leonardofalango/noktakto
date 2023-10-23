@@ -1,3 +1,5 @@
+using System.Security.Cryptography.X509Certificates;
+
 public class Notakto
 {
     int boards = 0;
@@ -29,6 +31,9 @@ public class Notakto
     /// </summary>
     public void Play(int board, int position)
     {
+        lastBoard = board;
+        lastPosition = position;
+
         data[9 * board + position] = true;
         
         int sumInitialPos = 8 * board; 
@@ -98,10 +103,42 @@ public class Notakto
         // Seu código aqui...
         List<Notakto> validMove = new();
 
-        // Na horizontal: Cima, Meio, Baixo
-        // Na vertical: Esquerda, Meio, Direita
-        // Na diagonal: Direita, Esquerda
+        for(int i = 0; i < data.Length; i++)
+        {
+            if (!CanPlay(i / 9))
+                continue;
 
+            if (!data[i])
+            {
+                Notakto newState = this.Clone();
+                newState.Play(i / 9, i % 9);
 
+                validMove.Add(
+                    newState
+                );
+            }
+        }
+
+        return validMove;
+    }
+    public void Print(){
+        string str = "";
+        int i = 1;
+        int board = 1;
+        foreach(var item in this.data)
+        {
+            str += item ? " X " : " . ";
+            str += "|";
+            
+            if(i % 3 == 0)
+                str += "\n";
+            if(board % 9 == 0)
+                str += "\n\n";
+
+            board += 1;
+            i += 1;
+        }
+
+        Console.WriteLine(str);
     }
 }

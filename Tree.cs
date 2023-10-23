@@ -14,8 +14,11 @@ public class Node
     {
         // Seu código aqui...
         foreach(Node child in this.Children)
-            if (child.State.GetLast() == (board, position))
+        {
+            var last = child.State.GetLast(); 
+            if (last.board == board && last.position == position)
                 return child;
+        }
         
         return this;
     }
@@ -25,22 +28,23 @@ public class Node
         if (deep == 0)
             return;
 
-        // Seu código aqui...
-        if (Expanded)
+        if (!Expanded)
         {
-            foreach (var child in Children)
+            foreach (var item in State.Next())
             {
-                child.Expand(deep - 1);
-            }   
+                Children.Add(new Node(){
+                    State = item,
+                    YouPlays = !YouPlays
+                });
+            }
         }
 
         Expanded = true;
-        foreach (var item in State.Next())
+
+        foreach (var child in Children)
         {
-            Children.Add(new Node(){
-                State = item
-            });
-        }
+            child.Expand(deep - 1);
+        }   
     }
 
     public Node PlayBest()
@@ -74,6 +78,7 @@ public class Node
             foreach (Node child in this.Children)
                 value = Math.Max(value, child.MiniMax());
 
+            this.Evaluation = value;
             return value;
         }
         else
@@ -83,6 +88,7 @@ public class Node
             foreach (Node child in this.Children)
                 value = Math.Min(value, child.MiniMax());
 
+            this.Evaluation = value;
             return value;
         }
     }
@@ -90,13 +96,28 @@ public class Node
     private float eval()
     {
         if (this.YouPlays)
+        {
             if (this.State.GameEnded())
-                return float.NegativeInfinity;
+            {   
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Lose Node");
+                return float.PositiveInfinity;
+            }
+        }
                     
         if (!this.YouPlays)
+        {
             if (this.State.GameEnded())
-                return float.PositiveInfinity;
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Win Node!");
+                return float.NegativeInfinity;
+            }
+
+        }
         
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("| Equal |");
         return 0;
     }
 

@@ -1,7 +1,7 @@
 ﻿string file = args.Length < 1 ? "m1" : args[0];
-int boards = args.Length < 2 ? 2 : int.Parse(args[1]);
+int boards = args.Length < 2 ? 1 : int.Parse(args[1]);
 
-int deep = 6;
+int deep = args.Length < 3 ? 9 : int.Parse(args[2]);
 
 Notakto initial = new Notakto(boards);
 Node tree = new Node
